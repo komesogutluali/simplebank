@@ -1,14 +1,14 @@
 package com.eteration.simplebanking.entities;
 
 import javax.persistence.*;
-import java.sql.Date;
+
 @Entity
 @Table (name = "Transaction")
 public class Transaction {
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private  Integer id;
     @Column(name = "amount")
@@ -17,8 +17,19 @@ public class Transaction {
     @JoinColumn(name = "TypeId",referencedColumnName = "id")
     TransactionType transactionType;
 
+    public BankAccount getBankAccount() {
+        return bankAccount;
+    }
+
+    public void setBankAccount(BankAccount bankAccount) {
+        this.bankAccount = bankAccount;
+    }
+
+    @OneToOne
+    @JoinColumn(name = "accountId",referencedColumnName = "id")
+    BankAccount bankAccount;
     @Column(name = "createDate")
-    private Date createDate;
+    private String createDate;
 
     public Integer getId() {
         return id;
@@ -36,11 +47,11 @@ public class Transaction {
         this.amount = amount;
     }
 
-    public Date getCreateDate() {
+    public String getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Date createDate) {
+    public void setCreateDate(String createDate) {
         this.createDate = createDate;
     }
 
