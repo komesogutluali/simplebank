@@ -11,14 +11,18 @@ import com.eteration.simplebanking.model.Amount;
 import com.eteration.simplebanking.repositorys.BankAccountRepository;
 import com.eteration.simplebanking.repositorys.TransactionRepository;
 import com.eteration.simplebanking.repositorys.TransactionTypeRepository;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -53,7 +57,7 @@ public class AccountService {
 
 
     }
-    public JSONObject Credit(String accountNumber, Amount amount)
+    public String Credit(String accountNumber, Amount amount)
     {
         String localDateTime=LocalDateTime.now().toString();
         BankAccount bankAccount=bankAccountRepository.findAll().stream().filter(b->b.getAccountnumber().equals(accountNumber)).findFirst().get();
@@ -63,36 +67,67 @@ public class AccountService {
         transaction.setBankAccount(bankAccount);
         transaction.setCreateDate(LocalDateTime.now().toString());
         bankAccount.setBalance(bankAccount.getBalance()+amount.getAmount().doubleValue());
+        String token = JWT.create()
+                .withSubject(Base64.getEncoder().encodeToString((localDateTime+"."+amount+"."+transaction.getTransactionType().getType()+"."+bankAccount.getId()).getBytes(StandardCharsets.UTF_8)))
+                .withExpiresAt(new Date(System.currentTimeMillis()))
+                .sign(Algorithm.HMAC256(AuthenticationConfigConstants.SECRET.getBytes()));
+        transaction.setApprovalcode(token);
         bankAccountRepository.save(bankAccount);
         transactionRepository.save(transaction);
-        String token = JWT.create()
-                .withSubject(localDateTime+amount+transaction.getTransactionType().getType()+bankAccount.getId())
-                .withExpiresAt(new Date(System.currentTimeMillis() + AuthenticationConfigConstants.EXPIRATION_TIME))
-                .sign(Algorithm.HMAC512(AuthenticationConfigConstants.SECRET.getBytes()));
         JSONObject response=new JSONObject();
         response.put("status","OK");
         response.put("approvalCode",token);
-        return response;
+
+        return response.toString();
     }
     public String Debit(String accountNumber,Amount amount)
     {
         BankAccount bankAccount=bankAccountRepository.findAll().stream().filter(b->b.getAccountnumber().equals(accountNumber)).findFirst().get();
         if(bankAccount.getBalance().doubleValue()!=0)
         {
-           String localDateTime=LocalDateTime.now().toString();
+            String localDateTime=LocalDateTime.now().toString();
             Transaction transaction=new Transaction();
             transaction.setAmount(amount.getAmount().doubleValue());
-            transaction.setTransactionType(transactionTypeRepository.findAll().stream().filter(t->t.getId().equals(1)).findFirst().get());
+            transaction.setTransactionType(transactionTypeRepository.findAll().stream().filter(t->t.getId().equals(2)).findFirst().get());
             transaction.setBankAccount(bankAccount);
             transaction.setCreateDate(localDateTime);
-            bankAccount.setBalance(bankAccount.getBalance()+amount.getAmount().doubleValue());
+            bankAccount.setBalance(bankAccount.getBalance()-amount.getAmount().doubleValue());
+            String token = JWT.create()
+                    .withSubject(Base64.getEncoder().encodeToString((localDateTime+"."+amount+"."+transaction.getTransactionType().getType()+"."+bankAccount.getId()).getBytes(StandardCharsets.UTF_8)))
+                    .withExpiresAt(new Date(System.currentTimeMillis()))
+                    .sign(Algorithm.HMAC256(AuthenticationConfigConstants.SECRET.getBytes()));
+            transaction.setApprovalcode(token);
             bankAccountRepository.save(bankAccount);
             transactionRepository.save(transaction);
-            String token = JWT.create()
-                    .withSubject(localDateTime+amount+transaction.getTransactionType().getType()+bankAccount.getId())
-                    .withExpiresAt(new Date(System.currentTimeMillis() + AuthenticationConfigConstants.EXPIRATION_TIME))
-                    .sign(Algorithm.HMAC512(AuthenticationConfigConstants.SECRET.getBytes()));
-            return token;
+            JSONObject response=new JSONObject();
+            response.put("status","OK");
+            response.put("approvalCode",token);
+            return response.toString();
         }
         return "0";
-    }}
+    }
+    public String AccountCurrentData(String accountNumber)
+    {
+        BankAccount bankAccount=bankAccountRepository.findAll().stream().filter(b->b.getAccountnumber().equals(accountNumber)).findFirst().get();
+        JSONObject jsonAccountCurrentData=new JSONObject();
+        jsonAccountCurrentData.put("accountNumber",bankAccount.getAccountnumber());
+        jsonAccountCurrentData.put("owner",bankAccount.getOwner());
+        jsonAccountCurrentData.put("balance",bankAccount.getBalance().doubleValue()+"");
+        jsonAccountCurrentData.put("createDate",bankAccount.getCreateDate());
+        JSONArray jsonArrayTransactionData=new JSONArray();
+         transactionRepository.findAll().stream().filter(tr->tr.getBankAccount().getId().equals(bankAccount.getId())).
+                 collect(Collectors.toList()).forEach(tran-> {
+             JSONObject jsonTransactionData=new JSONObject();
+
+             jsonTransactionData.put("date", tran.getCreateDate());
+             jsonTransactionData.put("amount",tran.getAmount());
+             jsonTransactionData.put("type",tran.getTransactionType().getType());
+             jsonTransactionData.put("approvalCode",tran.getApprovalcode());
+             jsonArrayTransactionData.put(jsonTransactionData);
+                 }
+         );
+        jsonAccountCurrentData.put("transactions",jsonArrayTransactionData);
+
+        return jsonAccountCurrentData.toString();
+    }
+}

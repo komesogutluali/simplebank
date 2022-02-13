@@ -13,6 +13,7 @@ import org.hibernate.mapping.Map;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,17 +38,20 @@ public class AccountController {
         return null;
 	}
 	@RequestMapping(method = RequestMethod.POST,value = "credit/{accountNumber}")
-    public  ResponseEntity<JSONObject> restCredit(@PathVariable(value = "accountNumber") String accountNumber, @RequestBody Amount amount)
+    public  String restCredit(@PathVariable(value = "accountNumber") String accountNumber, @RequestBody Amount amount)
     {
-
-
-
-        return ResponseEntity.ok(accountService.Credit(accountNumber,amount));
+        return accountService.Credit(accountNumber,amount);
     }
     @RequestMapping(method = RequestMethod.POST,value = "debit/{accountNumber}")
-    public TransactionStatus restDebit(@PathVariable String accountNumber, @RequestParam(name = "amount") Double amount)
+    public String restDebit(@PathVariable(value = "accountNumber")String accountNumber,  @RequestBody Amount amount)
     {
-        return null;
+        return accountService.Debit(accountNumber,amount);
+
+    }
+    @RequestMapping(method = RequestMethod.GET,value = "{accountNumber}")
+    public String restAccountCurrentData(@PathVariable(value = "accountNumber")String accountNumber)
+    {
+        return accountService.AccountCurrentData(accountNumber);
     }
     @RequestMapping(method = RequestMethod.GET,value = "insert")
     public String insert()

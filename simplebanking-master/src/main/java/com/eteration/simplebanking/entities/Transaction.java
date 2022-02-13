@@ -16,6 +16,20 @@ public class Transaction {
     @OneToOne
     @JoinColumn(name = "TypeId",referencedColumnName = "id")
     TransactionType transactionType;
+    @OneToOne
+    @JoinColumn(name = "accountId",referencedColumnName = "id")
+    BankAccount bankAccount;
+    @Column(name = "createDate")
+    private String createDate;
+    @Column(name = "approvalcode",length =350)
+    String  approvalcode;
+    public String getApprovalcode() {
+        return approvalcode;
+    }
+
+    public void setApprovalcode(String approvalcode) {
+        this.approvalcode = approvalcode;
+    }
 
     public BankAccount getBankAccount() {
         return bankAccount;
@@ -25,11 +39,6 @@ public class Transaction {
         this.bankAccount = bankAccount;
     }
 
-    @OneToOne
-    @JoinColumn(name = "accountId",referencedColumnName = "id")
-    BankAccount bankAccount;
-    @Column(name = "createDate")
-    private String createDate;
 
     public Integer getId() {
         return id;
