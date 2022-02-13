@@ -7,6 +7,7 @@ import com.eteration.simplebanking.controller.TransactionStatus;
 import com.eteration.simplebanking.entities.BankAccount;
 import com.eteration.simplebanking.entities.Transaction;
 import com.eteration.simplebanking.entities.TransactionType;
+import com.eteration.simplebanking.model.Account;
 import com.eteration.simplebanking.model.Amount;
 import com.eteration.simplebanking.repositorys.BankAccountRepository;
 import com.eteration.simplebanking.repositorys.TransactionRepository;
@@ -18,10 +19,8 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -34,7 +33,9 @@ public class AccountService {
     TransactionRepository transactionRepository;
     @Autowired
     TransactionTypeRepository transactionTypeRepository;
-    public void findAccount(String s) {
+    public BankAccount findAccount(String accountNumber) {
+        BankAccount bankAccount=bankAccountRepository.findAll().stream().filter(b->b.getAccountnumber().equals(accountNumber)).findFirst().get();
+    return bankAccount;
     }
     public void insert()
     {

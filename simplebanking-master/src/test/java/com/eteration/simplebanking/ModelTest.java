@@ -23,7 +23,7 @@ public class ModelTest {
 	}
 
 	@Test
-	public void testDepositIntoBankAccount() {
+	public void testDepositIntoBankAccount() throws InsufficientBalanceException {
 		Account account = new Account("Demet Demircan", "9834");
 		account.deposit(100.0);
 		assertTrue(account.getBalance() == 100.0);
@@ -44,7 +44,7 @@ public class ModelTest {
 			Account account = new Account("Demet Demircan", "9834");
 			account.deposit(100.0);
 			account.withdraw(500.0);
-		  });
+		});
 
 	}
 	
@@ -57,15 +57,15 @@ public class ModelTest {
 		// Deposit Transaction
 		DepositTransaction depositTrx = new DepositTransaction(100.0);
 		assertTrue(depositTrx.getCreateDate() != null);
-		account.post(depositTrx);
-		assertTrue(account.getBalance() == 100);
+		account.post(depositTrx,"depo");
+		assertTrue(account.getBalance() == 100.0);
 		assertTrue(account.getTransactions().size() == 1);
 
 		// Withdrawal Transaction
 		WithdrawalTransaction withdrawalTrx = new WithdrawalTransaction(60.0);
 		assertTrue(withdrawalTrx.getCreateDate() != null);
-		account.post(withdrawalTrx);
-		assertTrue(account.getBalance() == 40);
+		account.post(withdrawalTrx,"with");
+		assertTrue(account.getBalance() == 40.0);
 		assertTrue(account.getTransactions().size() == 2);
 	}
 }
