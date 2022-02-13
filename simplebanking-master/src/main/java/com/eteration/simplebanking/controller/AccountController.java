@@ -1,16 +1,14 @@
 package com.eteration.simplebanking.controller;
 
 
-import com.eteration.simplebanking.model.ATransaction;
 import com.eteration.simplebanking.model.Account;
 import com.eteration.simplebanking.model.Amount;
+import com.eteration.simplebanking.model.Transaction;
 import com.eteration.simplebanking.repositorys.TransactionTypeRepository;
 import com.eteration.simplebanking.services.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-
 
 
 @RequestMapping(value = "account/v1/")
@@ -24,10 +22,10 @@ public class AccountController {
     public ResponseEntity<Account> getAccount(String accountNumber) {
         return null;
     }
-    public ResponseEntity<TransactionStatus> credit(String accountNumber, ATransaction transaction) {
+    public ResponseEntity<TransactionStatus> credit(String accountNumber, Transaction transaction) {
         return null;
     }
-    public ResponseEntity<TransactionStatus> debit(String accountNumber, ATransaction transaction) {
+    public ResponseEntity<TransactionStatus> debit(String accountNumber, Transaction transaction) {
         return null;
 	}
 	@RequestMapping(method = RequestMethod.POST,value = "credit/{accountNumber}")
@@ -46,12 +44,5 @@ public class AccountController {
     {
         return accountService.AccountCurrentData(accountNumber);
     }
-    @RequestMapping(method = RequestMethod.GET,value = "insert")
-    public String insert()
-    {
 
-
-        return "xzxz";
-
-    }
 }

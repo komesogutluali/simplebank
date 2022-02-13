@@ -3,11 +3,9 @@ package com.eteration.simplebanking.services;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.eteration.simplebanking.config.AuthenticationConfigConstants;
-import com.eteration.simplebanking.controller.TransactionStatus;
 import com.eteration.simplebanking.entities.BankAccount;
 import com.eteration.simplebanking.entities.Transaction;
-import com.eteration.simplebanking.entities.TransactionType;
-import com.eteration.simplebanking.model.Account;
+
 import com.eteration.simplebanking.model.Amount;
 import com.eteration.simplebanking.repositorys.BankAccountRepository;
 import com.eteration.simplebanking.repositorys.TransactionRepository;
@@ -36,27 +34,6 @@ public class AccountService {
     public BankAccount findAccount(String accountNumber) {
         BankAccount bankAccount=bankAccountRepository.findAll().stream().filter(b->b.getAccountnumber().equals(accountNumber)).findFirst().get();
     return bankAccount;
-    }
-    public void insert()
-    {
-/*
-        BankAccount bankAccount=new BankAccount();
-        bankAccount.setOwner("Ali");
-        bankAccount.setBalance(0.0);
-        bankAccount.setAccountnumber("7454");
-        bankAccount.setCreateDate(LocalDateTime.now().toString());
-        bankAccountRepository.save(bankAccount);
-
-        TransactionType transactionType=new TransactionType();
-        transactionType.setType("DepositTransaction");
-        TransactionType transactionType1=new TransactionType();
-        transactionType1.setType("WithdrawalTransaction");
-        transactionTypeRepository.save(transactionType);
-        transactionTypeRepository.save(transactionType1);
-*/
-
-
-
     }
     public String Credit(String accountNumber, Amount amount)
     {

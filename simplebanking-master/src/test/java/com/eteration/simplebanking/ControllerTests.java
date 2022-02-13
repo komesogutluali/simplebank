@@ -40,10 +40,10 @@ class ControllerTests  {
     public void givenId_Credit_thenReturnJson()
     throws Exception {
         
-        Account account = new Account("Kerem Karaca", "17892");
-        doReturn(account).when(service).findAccount( "17892");
-        ResponseEntity<TransactionStatus> result = controller.credit( "17892", new DepositTransaction(1000.0));
-        verify(service, times(1)).findAccount("17892");
+        Account account = new Account("Kerem Karaca", "7454");
+        doReturn(account).when(service).findAccount( "7454");
+        ResponseEntity<TransactionStatus> result = controller.credit( "7454", new DepositTransaction(1000.0));
+        verify(service, times(1)).findAccount("7454");
         assertEquals("OK", result.getBody().getStatus());
     }
 

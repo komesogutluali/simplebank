@@ -7,17 +7,17 @@ public class Account {
     public  String owner;
     public  String accountNumber;
     public  double balance;
-    public List<ATransaction> listTransactions;
+    public List<Transaction> listTransactions;
     public List<PhoneBillPaymentTransaction> listPhoneBillPaymentTransaction;
     public Account(String owner,String accountNumber)
     {
         this.owner=owner;
         this.accountNumber=accountNumber;
         this.balance=0.0;
-        listTransactions=new ArrayList<ATransaction>();
+        listTransactions=new ArrayList<Transaction>();
         listPhoneBillPaymentTransaction=new ArrayList<PhoneBillPaymentTransaction>();
     }
-    public List<ATransaction> getTransactions()
+    public List<Transaction> getTransactions()
     {
         return listTransactions;
     }
@@ -47,17 +47,22 @@ public class Account {
             else
                 throw new InsufficientBalanceException();
     }
-    public void phonebill(ATransaction transactions) throws InsufficientBalanceException {
+    public void phonebill(Transaction transactions) throws InsufficientBalanceException {
 
+        double newbalance=balance-transactions.amount;
 
-
+              if(newbalance>0)
+                  balance=newbalance;
+              else
+                  throw new InsufficientBalanceException();
     }
-    public void post(ATransaction transactions,String TransactionKey) throws InsufficientBalanceException {
+    public void post(Transaction transactions,String TransactionKey) throws InsufficientBalanceException {
 
         switch (TransactionKey)
         {
             case  "depo":deposit(transactions.amount);listTransactions.add(transactions);break;
             case  "with":withdraw(transactions.amount);listTransactions.add(transactions);break;
+            case  "phonebill":phonebill(transactions);listTransactions.add(transactions);break;
 
         }
     }
